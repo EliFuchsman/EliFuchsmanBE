@@ -1,0 +1,9 @@
+.env
+bazel-*
+variables.tf
+.terraform/providers
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+dynamodb-local-metadata.json
+shared-local-instance.db
