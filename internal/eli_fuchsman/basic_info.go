@@ -5,12 +5,12 @@ import (
 )
 
 type BasicInfo struct {
-	FullName    string `json:"full_name"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	City        string `json:"city"`
-	State       string `json:"state"`
-	DateOfBirth string `json:"date_of_birth"`
+	FullName   string `json:"full_name"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	Profession string `json:"profession"`
 }
 
 func (c *EliFuchsmanClient) ReturnBasicInfo(tableName string) (*BasicInfo, error) {
@@ -23,12 +23,12 @@ func (c *EliFuchsmanClient) ReturnBasicInfo(tableName string) (*BasicInfo, error
 	}
 
 	basicInfo := &BasicInfo{
-		FullName:    dynamoInfo.FullName,
-		FirstName:   dynamoInfo.FirstName,
-		LastName:    dynamoInfo.LastName,
-		City:        dynamoInfo.LastName,
-		State:       dynamoInfo.State,
-		DateOfBirth: dynamoInfo.LastName,
+		FullName:   dynamoInfo.FullName,
+		FirstName:  dynamoInfo.FirstName,
+		LastName:   dynamoInfo.LastName,
+		City:       dynamoInfo.LastName,
+		State:      dynamoInfo.State,
+		Profession: dynamoInfo.Profession,
 	}
 
 	return basicInfo, nil

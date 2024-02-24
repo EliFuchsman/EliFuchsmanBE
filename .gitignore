@@ -5,5 +5,3 @@ variables.tf
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
-dynamodb-local-metadata.json
-shared-local-instance.db

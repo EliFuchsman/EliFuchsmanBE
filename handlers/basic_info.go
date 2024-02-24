@@ -10,19 +10,19 @@ import (
 var ErrTableNameNotFound = errors.New("tableName not found in context")
 
 func (h *Handler) GetBasicInfo(w http.ResponseWriter, r *http.Request) {
-	tableName, ok := r.Context().Value("tableName").(string)
+	tableName, ok := r.Context().Value("tableOne").(string)
 	if !ok {
 		log.Error("tableName not found in context")
-		InternalError500(w, "tableName", ErrTableNameNotFound)
+		InternalError500(w, "tableOne", ErrTableNameNotFound)
 		return
 	}
 
-	fields := log.Fields{"tableName": tableName}
+	fields := log.Fields{"tableOne": tableName}
 
 	basicInfo, err := h.h.ReturnBasicInfo(tableName)
 	if err != nil {
 		log.Errorf("%+v", err)
-		InternalError500(w, "region", err)
+		InternalError500(w, "Basic Info", err)
 		return
 	}
 

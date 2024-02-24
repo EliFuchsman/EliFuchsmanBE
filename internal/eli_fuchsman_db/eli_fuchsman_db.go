@@ -23,17 +23,18 @@ type EliFuchsmanDB struct {
 }
 
 type BasicInfo struct {
-	FullName    string `json:"full_name" dynamodbav:"FullName"`
-	FirstName   string `json:"first_name" dynamodbav:"FirstName"`
-	LastName    string `json:"last_name" dynamodbav:"LastName"`
-	City        string `json:"city" dynamodbav:"City"`
-	State       string `json:"state" dynamodbav:"State"`
-	DateOfBirth string `json:"date_of_birth" dynamodbav:"DateOfBirth"`
+	FullName   string `json:"full_name" dynamodbav:"FullName"`
+	FirstName  string `json:"first_name" dynamodbav:"FirstName"`
+	LastName   string `json:"last_name" dynamodbav:"LastName"`
+	City       string `json:"city" dynamodbav:"City"`
+	State      string `json:"state" dynamodbav:"State"`
+	Profession string `json:"profession" dynamodbav:"Profession"`
 }
 
 func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
 	awsConfig := aws.Config{
-		Region: aws.String(region),
+		Region:   aws.String(region),
+		Endpoint: aws.String(endpoint),
 	}
 
 	if endpoint != "" {
@@ -47,7 +48,7 @@ func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
 		return nil, err
 	}
 
-	dynamoDBClient := dynamodb.New(sess)
+	dynamoDBClient := dynamodb.New(sess, &awsConfig)
 
 	return &EliFuchsmanDB{
 		DynamoDB: dynamoDBClient,
