@@ -5,3 +5,4 @@ variables.tf
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
+MODULE.bazel.lock

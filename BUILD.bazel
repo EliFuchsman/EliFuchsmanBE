@@ -1,1 +1,51 @@
-# TODO
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+filegroup(
+    name = "env_file",
+    srcs = [".env"],
+    visibility = ["//visibility:public"],
+)
+
+gazelle(
+    name = "gazelle",
+)
+
+go_library(
+    name = "EliFuchsmanBE_lib",
+    srcs = ["main.go"],
+    data = [":env_file"],
+    importpath = "github.com/efuchsman/EliFuchsmanBE",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//config",
+        "//handlers",
+        "//internal/eli_fuchsman",
+        "//internal/eli_fuchsman_db",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_joho_godotenv//:godotenv",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)
+
+genrule(
+    name = "local_run",
+    srcs = [
+        ":EliFuchsmanBE_lib",
+        ":env_file",
+    ],
+    outs = ["local_run.sh"],
+    cmd = """
+    echo '#!/bin/bash' > $@
+    echo 'source $(location :env_file)' >> $@
+    echo './$(location :EliFuchsmanBE_lib)' >> $@
+    chmod +x $@
+    """,
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "EliFuchsmanBE",
+    embed = [":EliFuchsmanBE_lib"],
+    visibility = ["//visibility:public"],
+)

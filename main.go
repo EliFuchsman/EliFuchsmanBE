@@ -20,9 +20,14 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Error getting working directory: %v", err)
+	}
+	log.Printf("Current working directory: %s", wd)
 
-	log.Info("Starting Eli's Backend Application")
-	err := godotenv.Load(".env")
+	log.Info("Starting Eli's Backend Application!")
+	err = godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -48,7 +53,7 @@ func main() {
 	})
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Welcome to Eli's Backend")
+		fmt.Fprintf(w, "Welcome to Eli's Backend!")
 	})
 
 	eliHandler := handlers.NewHandler(eliClient)

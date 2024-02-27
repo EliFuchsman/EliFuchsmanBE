@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "handlers",
+    srcs = [
+        "apiresponses.go",
+        "basic_info.go",
+        "handler.go",
+    ],
+    importpath = "github.com/efuchsman/EliFuchsmanBE/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/eli_fuchsman",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)

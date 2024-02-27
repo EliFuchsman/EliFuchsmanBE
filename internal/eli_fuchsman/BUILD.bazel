@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "eli_fuchsman",
+    srcs = [
+        "basic_info.go",
+        "eli_fuchsman.go",
+    ],
+    importpath = "github.com/efuchsman/EliFuchsmanBE/internal/eli_fuchsman",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/eli_fuchsman_db",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)
