@@ -36,6 +36,7 @@ func main() {
 
 	eliClient := elifuchsman.NewEliFuchsmanClient(edb)
 	tableOne := os.Getenv("DYNAMO_TABLE_1")
+	tableTwo := os.Getenv("DYNAMO_TABLE_2")
 
 	router := mux.NewRouter()
 
@@ -46,6 +47,7 @@ func main() {
 			ctx = context.WithValue(ctx, "InfoFile", infoFile)
 			summaryFile := "data/summary.json"
 			ctx = context.WithValue(ctx, "SummaryFile", summaryFile)
+			ctx = context.WithValue(ctx, "TableTwo", tableTwo)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	})
@@ -68,6 +70,11 @@ func main() {
 	router.HandleFunc("/summary", func(w http.ResponseWriter, r *http.Request) {
 		log.Info("Endpoint Hit: /summary")
 		eliHandler.GetSummary(w, r)
+	}).Methods("GET")
+
+	router.HandleFunc("/experience", func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Endpoint Hit: /experience")
+		eliHandler.GetExperienceHistory(w, r)
 	}).Methods("GET")
 
 	handler := cors.SetCORSHeader(router)

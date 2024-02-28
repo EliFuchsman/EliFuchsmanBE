@@ -8,6 +8,7 @@ type Client interface {
 	ReturnBasicInfo(filePath string) (*BasicInfo, error)
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
 	ReturnSummary(filePath string) (*Summary, error)
+	ReturnExperienceHistory(tableName string) (*ExperienceHistory, error)
 }
 
 type EliFuchsmanClient struct {

@@ -13,6 +13,7 @@ import (
 
 type Client interface {
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
+	ReturnExperienceHistory(tableName string) (*ExperienceHistory, error)
 }
 
 type DBClient interface {
@@ -47,6 +48,23 @@ type Education struct {
 
 type EducationHistory struct {
 	History []*Education
+}
+
+type Experience struct {
+	FullName       string `json:"full_name" dynamodbav:"FullName"`
+	ExperienceId   string `json:"experience_id" dynamodbav:"ExperienceId"`
+	Company        string `json:"company" dynamodbav:"Company"`
+	Position       string `json:"position" dynamodbav:"Position"`
+	EmploymentType string `json:"employment_type" dynamodbav:"EmploymentType"`
+	Address        string `json:"address" dynamodbav:"Address"`
+	Website        string `json:"website" dynamodbav:"Website"`
+	Start          string `json:"start" dynamodbav:"Start"`
+	End            string `json:"end" dynamodbav:"End"`
+	Description    string `json:"description" dynamodbav:"Description"`
+}
+
+type ExperienceHistory struct {
+	History []*Experience
 }
 
 func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
@@ -107,4 +125,40 @@ func (edb *EliFuchsmanDB) ReturnEducationHistory(tableName string) (*EducationHi
 		edHistory.History = append(edHistory.History, ed)
 	}
 	return edHistory, nil
+}
+
+func (edb *EliFuchsmanDB) ReturnExperienceHistory(tableName string) (*ExperienceHistory, error) {
+	if tableName == "" {
+		return nil, errors.New("tableName is required")
+	}
+
+	fullName := "EliFuchsman"
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		KeyConditionExpression: aws.String("FullName = :fullName"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":fullName": {
+				S: aws.String(fullName),
+			},
+		},
+	}
+
+	result, err := edb.DynamoDB.Query(input)
+	if err != nil {
+		log.WithError(err).Error("Error querying DynamoDB")
+		return nil, fmt.Errorf("error querying DynamoDB: %w", err)
+	}
+
+	expHistory := &ExperienceHistory{History: make([]*Experience, 0)}
+
+	for _, item := range result.Items {
+		ed := &Experience{}
+		if err = dynamodbattribute.UnmarshalMap(item, ed); err != nil {
+			log.WithError(err).Error("Error unmarshaling item")
+			log.WithField("rawItem", item).Error("Raw DynamoDB Item")
+			return nil, fmt.Errorf("error unmarshaling item: %w", err)
+		}
+		expHistory.History = append(expHistory.History, ed)
+	}
+	return expHistory, nil
 }

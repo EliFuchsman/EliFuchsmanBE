@@ -16,6 +16,8 @@ type BasicInfo struct {
 	Profession string `json:"profession"`
 	Email      string `json:"email"`
 	Phone      string `json:"phone"`
+	GitHub     string `json:"GitHub"`
+	LinkedIn   string `json:"LinkedIn"`
 }
 
 func (c *EliFuchsmanClient) ReturnBasicInfo(filePath string) (*BasicInfo, error) {

@@ -6,6 +6,7 @@ go_library(
         "apiresponses.go",
         "basic_info.go",
         "education_history.go",
+        "experience_history.go",
         "handler.go",
         "summary.go",
     ],
