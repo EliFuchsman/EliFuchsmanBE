@@ -4,6 +4,7 @@ go_library(
     name = "eli_fuchsman",
     srcs = [
         "basic_info.go",
+        "education_history.go",
         "eli_fuchsman.go",
     ],
     importpath = "github.com/efuchsman/EliFuchsmanBE/internal/eli_fuchsman",

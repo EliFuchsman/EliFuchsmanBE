@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "apiresponses.go",
         "basic_info.go",
+        "education_history.go",
         "handler.go",
     ],
     importpath = "github.com/efuchsman/EliFuchsmanBE/handlers",

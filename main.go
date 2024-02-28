@@ -20,14 +20,9 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Error getting working directory: %v", err)
-	}
-	log.Printf("Current working directory: %s", wd)
 
 	log.Info("Starting Eli's Backend Application!")
-	err = godotenv.Load(".env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -41,13 +36,14 @@ func main() {
 
 	eliClient := elifuchsman.NewEliFuchsmanClient(edb)
 	tableOne := os.Getenv("DYNAMO_TABLE_1")
-	log.Infof("Using DynamoDB Table: %s", tableOne)
+	tableTwo := os.Getenv("DYNAMO_TABLE_2")
 
 	router := mux.NewRouter()
 
 	router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := context.WithValue(r.Context(), "tableOne", tableOne)
+			ctx = context.WithValue(ctx, "tableTwo", tableTwo)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	})
@@ -57,7 +53,15 @@ func main() {
 	})
 
 	eliHandler := handlers.NewHandler(eliClient)
-	router.HandleFunc("/info", eliHandler.GetBasicInfo).Methods("GET")
+	router.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Endpoint Hit: /info")
+		eliHandler.GetBasicInfo(w, r)
+	}).Methods("GET")
+
+	router.HandleFunc("/education", func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Endpoint Hit: /education")
+		eliHandler.GetEducationHistory(w, r)
+	}).Methods("GET")
 
 	handler := cors.SetCORSHeader(router)
 

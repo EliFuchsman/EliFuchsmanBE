@@ -1,16 +1,19 @@
 package elifuchsmandb
 
 import (
-	"log"
+	"errors"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	log "github.com/sirupsen/logrus"
 )
 
 type Client interface {
 	ReturnBasicInfo(tableName string) (*BasicInfo, error)
+	ReturnEducationHistory(tableName string) (*EducationHistory, error)
 }
 
 type DBClient interface {
@@ -29,6 +32,22 @@ type BasicInfo struct {
 	City       string `json:"city" dynamodbav:"City"`
 	State      string `json:"state" dynamodbav:"State"`
 	Profession string `json:"profession" dynamodbav:"Profession"`
+}
+
+type Education struct {
+	FullName      string `json:"full_name" dynamodbav:"FullName"`
+	EducationType string `json:"education_type" dynamodbav:"EducationType"`
+	Name          string `json:"name" dynamodbav:"Name"`
+	City          string `json:"city" dynamodbav:"City"`
+	State         string `json:"state" dynamodbav:"State"`
+	Degree        string `json:"degree" dynamodbav:"Degree"`
+	Major         string `json:"major" dynamodbav:"Major"`
+	From          string `json:"from" dynamodbav:"From"`
+	To            string `json:"to" dynamodbav:"To"`
+}
+
+type EducationHistory struct {
+	History []*Education
 }
 
 func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
@@ -78,4 +97,40 @@ func (edb *EliFuchsmanDB) ReturnBasicInfo(tableName string) (*BasicInfo, error) 
 	}
 
 	return item, nil
+}
+
+func (edb *EliFuchsmanDB) ReturnEducationHistory(tableName string) (*EducationHistory, error) {
+	if tableName == "" {
+		return nil, errors.New("tableName is required")
+	}
+
+	fullName := "EliFuchsman"
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		KeyConditionExpression: aws.String("FullName = :fullName"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":fullName": {
+				S: aws.String(fullName),
+			},
+		},
+	}
+
+	result, err := edb.DynamoDB.Query(input)
+	if err != nil {
+		log.WithError(err).Error("Error querying DynamoDB")
+		return nil, fmt.Errorf("error querying DynamoDB: %w", err)
+	}
+
+	edHistory := &EducationHistory{History: make([]*Education, 0)}
+
+	for _, item := range result.Items {
+		ed := &Education{}
+		if err = dynamodbattribute.UnmarshalMap(item, ed); err != nil {
+			log.WithError(err).Error("Error unmarshaling item")
+			log.WithField("rawItem", item).Error("Raw DynamoDB Item")
+			return nil, fmt.Errorf("error unmarshaling item: %w", err)
+		}
+		edHistory.History = append(edHistory.History, ed)
+	}
+	return edHistory, nil
 }
