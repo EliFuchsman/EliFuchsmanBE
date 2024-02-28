@@ -5,8 +5,9 @@ import (
 )
 
 type Client interface {
-	ReturnBasicInfo(tableName string) (*BasicInfo, error)
+	ReturnBasicInfo(filePath string) (*BasicInfo, error)
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
+	ReturnSummary(filePath string) (*Summary, error)
 }
 
 type EliFuchsmanClient struct {

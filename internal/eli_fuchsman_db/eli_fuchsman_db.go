@@ -12,7 +12,6 @@ import (
 )
 
 type Client interface {
-	ReturnBasicInfo(tableName string) (*BasicInfo, error)
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
 }
 
@@ -72,31 +71,6 @@ func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
 	return &EliFuchsmanDB{
 		DynamoDB: dynamoDBClient,
 	}, nil
-}
-
-func (edb *EliFuchsmanDB) ReturnBasicInfo(tableName string) (*BasicInfo, error) {
-	input := &dynamodb.GetItemInput{
-		TableName: aws.String(tableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"FullName": {
-				S: aws.String("EliFuchsman"),
-			},
-		},
-	}
-
-	result, err := edb.DynamoDB.GetItem(input)
-	if err != nil {
-		return nil, err
-	}
-
-	item := &BasicInfo{}
-	err = dynamodbattribute.UnmarshalMap(result.Item, item)
-	if err != nil {
-		log.Println("Error unmarshalling item:", err)
-		return nil, err
-	}
-
-	return item, nil
 }
 
 func (edb *EliFuchsmanDB) ReturnEducationHistory(tableName string) (*EducationHistory, error) {

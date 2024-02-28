@@ -7,14 +7,14 @@ import (
 )
 
 func (h *Handler) GetEducationHistory(w http.ResponseWriter, r *http.Request) {
-	tableName, ok := r.Context().Value("tableTwo").(string)
+	tableName, ok := r.Context().Value("TableOne").(string)
 	if !ok {
-		log.Error("tableName not found in context")
-		InternalError500(w, "tableTwo", ErrTableNameNotFound)
+		log.Error("TableName not found in context")
+		InternalError500(w, "TableOne", ErrTableNameNotFound)
 		return
 	}
 
-	fields := log.Fields{"tableTwo": tableName, "full_name": "EliFuchsman"}
+	fields := log.Fields{"TableOne": tableName, "full_name": "EliFuchsman"}
 
 	educationHistory, err := h.h.ReturnEducationHistory(tableName)
 	if err != nil {

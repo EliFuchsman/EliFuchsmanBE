@@ -1,6 +1,9 @@
 package elifuchsman
 
 import (
+	"encoding/json"
+	"io/ioutil"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -11,24 +14,24 @@ type BasicInfo struct {
 	City       string `json:"city"`
 	State      string `json:"state"`
 	Profession string `json:"profession"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
 }
 
-func (c *EliFuchsmanClient) ReturnBasicInfo(tableName string) (*BasicInfo, error) {
-	fields := log.Fields{"table_name": tableName}
+func (c *EliFuchsmanClient) ReturnBasicInfo(filePath string) (*BasicInfo, error) {
+	fields := log.Fields{"file_path": filePath}
 
-	dynamoInfo, err := c.edb.ReturnBasicInfo(tableName)
+	jsonData, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.WithFields(fields).Errorf("ERROR FETCHING INFO FROM DYNAMODB: %+v", err)
+		log.WithFields(fields).Errorf("ERROR READING JSON FILE: %+v", err)
 		return nil, err
 	}
 
-	basicInfo := &BasicInfo{
-		FullName:   dynamoInfo.FullName,
-		FirstName:  dynamoInfo.FirstName,
-		LastName:   dynamoInfo.LastName,
-		City:       dynamoInfo.LastName,
-		State:      dynamoInfo.State,
-		Profession: dynamoInfo.Profession,
+	var basicInfo *BasicInfo
+	err = json.Unmarshal(jsonData, &basicInfo)
+	if err != nil {
+		log.WithFields(fields).Errorf("ERROR UNMARSHALING JSON: %+v", err)
+		return nil, err
 	}
 
 	return basicInfo, nil

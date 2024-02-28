@@ -7,6 +7,7 @@ go_library(
         "basic_info.go",
         "education_history.go",
         "handler.go",
+        "summary.go",
     ],
     importpath = "github.com/efuchsman/EliFuchsmanBE/handlers",
     visibility = ["//visibility:public"],

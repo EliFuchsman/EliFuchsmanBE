@@ -7,6 +7,12 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "data_files",
+    srcs = glob(["data/**"]),
+    visibility = ["//visibility:public"],
+)
+
 gazelle(
     name = "gazelle",
 )
@@ -14,7 +20,10 @@ gazelle(
 go_library(
     name = "EliFuchsmanBE_lib",
     srcs = ["main.go"],
-    data = [":env_file"],
+    data = [
+        ":data_files",
+        ":env_file",
+    ],
     importpath = "github.com/efuchsman/EliFuchsmanBE",
     visibility = ["//visibility:private"],
     deps = [
@@ -33,12 +42,14 @@ genrule(
     srcs = [
         ":EliFuchsmanBE_lib",
         ":env_file",
+        ":data_files",
     ],
     outs = ["local_run.sh"],
     cmd = """
     echo '#!/bin/bash' > $@
     echo 'source $(location :env_file)' >> $@
     echo './$(location :EliFuchsmanBE_lib)' >> $@
+    echo 'source $(locations //:data_files)' >> $@
     chmod +x $@
     """,
     visibility = ["//visibility:public"],
