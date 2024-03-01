@@ -37,6 +37,8 @@ func main() {
 	eliClient := elifuchsman.NewEliFuchsmanClient(edb)
 	tableOne := os.Getenv("DYNAMO_TABLE_1")
 	tableTwo := os.Getenv("DYNAMO_TABLE_2")
+	bucket := os.Getenv("S3_BUCKET")
+	bucketKey := os.Getenv("S3_BUCKET_KEY")
 
 	router := mux.NewRouter()
 
@@ -48,6 +50,9 @@ func main() {
 			summaryFile := "data/summary.json"
 			ctx = context.WithValue(ctx, "SummaryFile", summaryFile)
 			ctx = context.WithValue(ctx, "TableTwo", tableTwo)
+			ctx = context.WithValue(ctx, "Bucket", bucket)
+			ctx = context.WithValue(ctx, "BucketKey", bucketKey)
+			ctx = context.WithValue(ctx, "AWSRegion", awsRegion)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	})
@@ -76,6 +81,11 @@ func main() {
 	router.HandleFunc("/experience", func(w http.ResponseWriter, r *http.Request) {
 		log.Info("Endpoint Hit: /experience")
 		eliHandler.GetExperienceHistory(w, r)
+	}).Methods("GET")
+
+	router.HandleFunc("/resume", func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Endpoint Hit: /resume")
+		eliHandler.GetResume(w, r)
 	}).Methods("GET")
 
 	handler := cors.SetCORSHeader(router)

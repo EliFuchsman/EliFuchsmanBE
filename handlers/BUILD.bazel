@@ -8,12 +8,16 @@ go_library(
         "education_history.go",
         "experience_history.go",
         "handler.go",
+        "resume.go",
         "summary.go",
     ],
     importpath = "github.com/efuchsman/EliFuchsmanBE/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//internal/eli_fuchsman",
+        "@com_github_aws_aws_sdk_go//aws",
+        "@com_github_aws_aws_sdk_go//aws/session",
+        "@com_github_aws_aws_sdk_go//service/s3",
         "@com_github_sirupsen_logrus//:logrus",
     ],
 )
