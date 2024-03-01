@@ -1,3 +1,4 @@
 bazel run //:gazelle
 bazel build :all
-bazel run :EliFuchsmanBE
+
+docker-compose up --build

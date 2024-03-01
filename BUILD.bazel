@@ -58,5 +58,7 @@ genrule(
 go_binary(
     name = "EliFuchsmanBE",
     embed = [":EliFuchsmanBE_lib"],
+    goarch = "arm64",
+    goos = "linux",
     visibility = ["//visibility:public"],
 )

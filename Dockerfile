@@ -1,7 +1,7 @@
 FROM golang:latest
 
-WORKDIR /app
+WORKDIR /EliFuchsmanBE
 
-COPY bazel-bin/EliFuchsmanBE_/EliFuchsmanBE.runfiles/ .
+COPY . .
 
-CMD ["./EliFuchsmanBE_/EliFuchsmanBE.runfiles/_main/EliFuchsmanBE_/EliFuchsmanBE"]
+CMD ["./bazel-bin/EliFuchsmanBE_/EliFuchsmanBE"]

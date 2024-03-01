@@ -53,6 +53,7 @@ func main() {
 	})
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		log.Info("Endpoint Hit: /")
 		fmt.Fprintf(w, "Welcome to Eli's Backend!")
 	})
 
