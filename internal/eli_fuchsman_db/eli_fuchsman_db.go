@@ -14,6 +14,7 @@ import (
 type Client interface {
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
 	ReturnExperienceHistory(tableName string) (*ExperienceHistory, error)
+	ReturnProjects(tableName string) (*Projects, error)
 }
 
 type DBClient interface {
@@ -65,6 +66,21 @@ type Experience struct {
 
 type ExperienceHistory struct {
 	History []*Experience
+}
+
+type Project struct {
+	FullName      string   `json:"full_name" dynamodbav:"FullName"`
+	ProjectName   string   `json:"project_name" dynamodbav:"ProjectName"`
+	ProdName      string   `json:"production_name" dynamodbav:"ProdName"`
+	Repository    string   `json:"repository" dynamodbav:"Repository"`
+	Image         string   `json:"image" dynamodbav:"Image"`
+	Description   string   `json:"description" dynamodbav:"Description"`
+	LearningGoals string   `json:"learning_goals" dynamodbav:"LearningGoals"`
+	TechStack     []string `json:"tech_stack" dynamodbav:"TechStack"`
+}
+
+type Projects struct {
+	Projects []*Project
 }
 
 func NewEliFuchsmanDB(region string, endpoint string) (*EliFuchsmanDB, error) {
@@ -161,4 +177,40 @@ func (edb *EliFuchsmanDB) ReturnExperienceHistory(tableName string) (*Experience
 		expHistory.History = append(expHistory.History, ed)
 	}
 	return expHistory, nil
+}
+
+func (edb *EliFuchsmanDB) ReturnProjects(tableName string) (*Projects, error) {
+	if tableName == "" {
+		return nil, errors.New("tableName is required")
+	}
+
+	fullName := "EliFuchsman"
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		KeyConditionExpression: aws.String("FullName = :fullName"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":fullName": {
+				S: aws.String(fullName),
+			},
+		},
+	}
+
+	result, err := edb.DynamoDB.Query(input)
+	if err != nil {
+		log.WithError(err).Error("Error querying DynamoDB")
+		return nil, fmt.Errorf("error querying DynamoDB: %w", err)
+	}
+
+	projects := &Projects{Projects: make([]*Project, 0)}
+
+	for _, item := range result.Items {
+		proj := &Project{}
+		if err = dynamodbattribute.UnmarshalMap(item, proj); err != nil {
+			log.WithError(err).Error("Error unmarshaling item")
+			log.WithField("rawItem", item).Error("Raw DynamoDB Item")
+			return nil, fmt.Errorf("error unmarshaling item: %w", err)
+		}
+		projects.Projects = append(projects.Projects, proj)
+	}
+	return projects, nil
 }
