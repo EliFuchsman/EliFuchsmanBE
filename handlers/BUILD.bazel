@@ -8,6 +8,7 @@ go_library(
         "education_history.go",
         "experience_history.go",
         "handler.go",
+        "projects.go",
         "resume.go",
         "summary.go",
     ],

@@ -9,6 +9,7 @@ type Client interface {
 	ReturnEducationHistory(tableName string) (*EducationHistory, error)
 	ReturnSummary(filePath string) (*Summary, error)
 	ReturnExperienceHistory(tableName string) (*ExperienceHistory, error)
+	ReturnProjects(tableName string) (*Projects, error)
 }
 
 type EliFuchsmanClient struct {
