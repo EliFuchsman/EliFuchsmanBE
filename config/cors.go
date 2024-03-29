@@ -5,10 +5,7 @@ import (
 	"strings"
 )
 
-// Middleware for Cross-Origin Resource Sharing (CORS)
-// This middleware sets the appropriate CORS headers to allow safe cross-origin requests.
-// By default, it allows only HTTP GET requests.
-func SetCORSHeader(next http.Handler) http.Handler {
+func SetCORS(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		headers := w.Header()
 		origin := r.Header.Get("Origin")
@@ -16,11 +13,10 @@ func SetCORSHeader(next http.Handler) http.Handler {
 
 		if origin != "" {
 			headers.Set("Access-Control-Allow-Origin", "*")
-
-			if strings.HasPrefix(origin, "http") {
+			if strings.HasPrefix(origin, "http") || strings.HasPrefix(origin, "https") {
 				headers.Set("Access-Control-Allow-Origin", origin)
 			}
-			headers.Set("Access-Control-Allow-Headers", "*")
+			headers.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, API-Key")
 			headers.Set("Access-Control-Allow-Methods", strings.Join(allowed, ", "))
 		}
 

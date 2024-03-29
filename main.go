@@ -40,11 +40,23 @@ func main() {
 	tableThree := os.Getenv("DYNAMO_TABLE_3")
 	bucket := os.Getenv("S3_BUCKET")
 	bucketKey := os.Getenv("S3_BUCKET_KEY")
+	expectedAPIKey := os.Getenv("API_KEY")
 
 	router := mux.NewRouter()
 
 	router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			apiKey := r.Header.Get("API-Key")
+			if apiKey != expectedAPIKey {
+				handlers.Forbidden403(w, "API KEY")
+				return
+			}
+
 			ctx := context.WithValue(r.Context(), "TableOne", tableOne)
 			infoFile := "data/basic_info.json"
 			ctx = context.WithValue(ctx, "InfoFile", infoFile)
@@ -95,9 +107,9 @@ func main() {
 		eliHandler.GetProjects(w, r)
 	}).Methods("GET")
 
-	handler := cors.SetCORSHeader(router)
+	handler := cors.SetCORS(router)
 
-	port := 8000
+	port := 80
 	fmt.Printf("Server is running on :%d\n", port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
 		log.Fatalf("Error starting server: %v", err)

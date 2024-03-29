@@ -4,4 +4,9 @@ WORKDIR /EliFuchsmanBE
 
 COPY . .
 
-CMD ["./bazel-bin/EliFuchsmanBE_/EliFuchsmanBE"]
+COPY bazel-bin-docker /EliFuchsmanBE
+
+EXPOSE 80
+
+CMD ["./bazel-bin-docker/EliFuchsmanBE"]
+

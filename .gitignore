@@ -6,8 +6,3 @@ variables.tf
 terraform.tfstate
 terraform.tfstate.backup
 MODULE.bazel.lock
-variables.tf
-.terraform/providers
-.terraform.lock.hcl
-terraform.tfstate
-terraform.tfstate.backup
